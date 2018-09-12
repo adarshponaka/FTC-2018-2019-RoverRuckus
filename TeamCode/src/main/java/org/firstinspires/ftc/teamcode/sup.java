@@ -97,30 +97,63 @@ public class sup extends OpMode
      */
     @Override
     public void loop() {
-        telemetry.addData("Status", "Running: " + runtime.toString());
-
-        double A = .5;
-        double L = .5;
-        //front left motor
-        L = getL(gamepad1.left_stick_x,gamepad1.left_stick_y,Math.PI/4);
-        A = getA(gamepad1.left_stick_x,gamepad1.left_stick_y,Math.PI/4);
-        flMotor.setPower(flspeedcoefficient * L * A);
-        telemetry.addLine("fl: " + Double.toString(flspeedcoefficient * L * A));
-        //back left motor
-        L = getL(gamepad1.left_stick_x,gamepad1.left_stick_y,-Math.PI/4);
-        A = getA(gamepad1.left_stick_x,gamepad1.left_stick_y,-Math.PI/4);
-        blMotor.setPower(blspeedcoefficient * L * A);
-        telemetry.addLine("bl: " + Double.toString(blspeedcoefficient * L * A));
-        //front right motor
-        L = getL(gamepad1.right_stick_x,gamepad1.right_stick_y,-Math.PI/4);
-        A = getA(gamepad1.right_stick_x,gamepad1.right_stick_y,-Math.PI/4);
-        frMotor.setPower(frspeedcoefficient * L * A );
-        telemetry.addLine("fr: " + Double.toString(frspeedcoefficient * L * A));
-        //back right motor
-        L = getL(gamepad1.right_stick_x,gamepad1.right_stick_y,Math.PI/4);
-        A = getA(gamepad1.right_stick_x,gamepad1.right_stick_y,Math.PI/4);
-        brMotor.setPower(brspeedcoefficient * L * A );
-        telemetry.addLine("br: " + Double.toString(brspeedcoefficient * L * A));
+        if (gamepad1.left_trigger > 0.9) {
+            telemetry.addData("Status", "Running: " + runtime.toString());
+            double A = .5;
+            double L = .5;
+            flspeedcoefficient = -.9;
+            blspeedcoefficient = -.9;
+            frspeedcoefficient = .9;
+            brspeedcoefficient = .9;
+            //front left motor
+            L = getL(gamepad1.left_stick_x, gamepad1.left_stick_y, Math.PI / 4);
+            A = getA(gamepad1.left_stick_x, gamepad1.left_stick_y, Math.PI / 4);
+            flMotor.setPower(flspeedcoefficient * L * A);
+            telemetry.addLine("fl: " + Double.toString(flspeedcoefficient * L * A));
+            //back left motor
+            L = getL(gamepad1.left_stick_x, gamepad1.left_stick_y, -Math.PI / 4);
+            A = getA(gamepad1.left_stick_x, gamepad1.left_stick_y, -Math.PI / 4);
+            blMotor.setPower(blspeedcoefficient * L * A);
+            telemetry.addLine("bl: " + Double.toString(blspeedcoefficient * L * A));
+            //front right motor
+            L = getL(gamepad1.right_stick_x, gamepad1.right_stick_y, -Math.PI / 4);
+            A = getA(gamepad1.right_stick_x, gamepad1.right_stick_y, -Math.PI / 4);
+            frMotor.setPower(frspeedcoefficient * L * A);
+            telemetry.addLine("fr: " + Double.toString(frspeedcoefficient * L * A));
+            //back right motor
+            L = getL(gamepad1.right_stick_x, gamepad1.right_stick_y, Math.PI / 4);
+            A = getA(gamepad1.right_stick_x, gamepad1.right_stick_y, Math.PI / 4);
+            brMotor.setPower(brspeedcoefficient * L * A);
+            telemetry.addLine("br: " + Double.toString(brspeedcoefficient * L * A));
+        }else if (gamepad1.left_trigger == 0){
+            telemetry.addData("Status", "Running: " + runtime.toString());
+            double A = .5;
+            double L = .5;
+            flspeedcoefficient = -.54;
+            blspeedcoefficient = -.54;
+            frspeedcoefficient = .54;
+            brspeedcoefficient = .54;
+            //front left motor
+            L = getL(gamepad1.left_stick_x, gamepad1.left_stick_y, Math.PI / 4);
+            A = getA(gamepad1.left_stick_x, gamepad1.left_stick_y, Math.PI / 4);
+            flMotor.setPower(flspeedcoefficient * L * A);
+            telemetry.addLine("fl: " + Double.toString(flspeedcoefficient * L * A));
+            //back left motor
+            L = getL(gamepad1.left_stick_x, gamepad1.left_stick_y, -Math.PI / 4);
+            A = getA(gamepad1.left_stick_x, gamepad1.left_stick_y, -Math.PI / 4);
+            blMotor.setPower(blspeedcoefficient * L * A);
+            telemetry.addLine("bl: " + Double.toString(blspeedcoefficient * L * A));
+            //front right motor
+            L = getL(gamepad1.right_stick_x, gamepad1.right_stick_y, -Math.PI / 4);
+            A = getA(gamepad1.right_stick_x, gamepad1.right_stick_y, -Math.PI / 4);
+            frMotor.setPower(frspeedcoefficient * L * A);
+            telemetry.addLine("fr: " + Double.toString(frspeedcoefficient * L * A));
+            //back right motor
+            L = getL(gamepad1.right_stick_x, gamepad1.right_stick_y, Math.PI / 4);
+            A = getA(gamepad1.right_stick_x, gamepad1.right_stick_y, Math.PI / 4);
+            brMotor.setPower(brspeedcoefficient * L * A);
+            telemetry.addLine("br: " + Double.toString(brspeedcoefficient * L * A));
+        }
     }
     private static double getL(double x, double y, double angle){
         return Math.pow((Math.pow(x,2) + Math.pow(y, 2)),.5);
