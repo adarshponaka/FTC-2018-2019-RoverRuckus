@@ -101,10 +101,10 @@ public class sup extends OpMode
             telemetry.addData("Status", "Running: " + runtime.toString());
             double A = .5;
             double L = .5;
-            flspeedcoefficient = -.9;
-            blspeedcoefficient = -.9;
-            frspeedcoefficient = .9;
-            brspeedcoefficient = .9;
+            flspeedcoefficient = -.6;
+            blspeedcoefficient = -.6;
+            frspeedcoefficient = .6;
+            brspeedcoefficient = .6;
             //front left motor
             L = getL(gamepad1.left_stick_x, gamepad1.left_stick_y, Math.PI / 4);
             A = getA(gamepad1.left_stick_x, gamepad1.left_stick_y, Math.PI / 4);
@@ -129,10 +129,10 @@ public class sup extends OpMode
             telemetry.addData("Status", "Running: " + runtime.toString());
             double A = .5;
             double L = .5;
-            flspeedcoefficient = -.54;
-            blspeedcoefficient = -.54;
-            frspeedcoefficient = .54;
-            brspeedcoefficient = .54;
+            flspeedcoefficient = -.9;
+            blspeedcoefficient = -.9;
+            frspeedcoefficient = .9;
+            brspeedcoefficient = .9;
             //front left motor
             L = getL(gamepad1.left_stick_x, gamepad1.left_stick_y, Math.PI / 4);
             A = getA(gamepad1.left_stick_x, gamepad1.left_stick_y, Math.PI / 4);
