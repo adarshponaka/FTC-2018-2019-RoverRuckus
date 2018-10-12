@@ -29,8 +29,9 @@ public class LineFollow extends LinearOpMode {
     ColorSensor sensorColor;
 
     private static final Double ticks_per_inch = 510 / (3.1415 * 4);
+    private static final Double THRESHOLD = 2.0;
 
-    public void runOpMode(){
+    public void runOpMode() {
         //motors
         motorFL = hardwareMap.dcMotor.get("fl");
         motorFR = hardwareMap.dcMotor.get("fr");
@@ -38,7 +39,7 @@ public class LineFollow extends LinearOpMode {
         motorBR = hardwareMap.dcMotor.get("br");
 
         //Mecanum
-        bot = new Mecanum(motorFR,motorFL,motorBR,motorBL);
+        bot = new Mecanum(motorFR, motorFL, motorBR, motorBL);
 
         //IMU
         imu = new AdafruitIMU(hardwareMap.get(BNO055IMU.class, "imu"));
@@ -46,14 +47,40 @@ public class LineFollow extends LinearOpMode {
         //Color Sensor
         sensorColor = hardwareMap.get(ColorSensor.class, "sensor_color_distance");
 
+        waitForStart();
         imu.start();
 
         //STATE ONE: MOVE FORWARD
-        encoderDrive(2,"forward",.5);
+        int stop = 0;
+        /*
+        motorFR.setPower(4);
+        motorBR.setPower(4);
+        motorFL.setPower(4);
+        motorBL.setPower(4);
+        */
+        gyroTurnRight(90, "oof", 0.3);
+        telemetry.addData("IMU:",imu.getHeading());
 
-        //if(sensorColor.argb()= ){
-
+        while(stop == 0 ) {
+            while ((sensorColor.blue() < 80) && (sensorColor.red() < 80) && (sensorColor.green() < 80)) {
+                telemetry.addData("sup", "sup");
+                encoderDrive(1, "forward", 0.2);
+            };
+            while ((sensorColor.blue() > 350) && (sensorColor.red() > 350) && (sensorColor.green() > 350)) {
+                gyroTurnRight(90, "oof", 0.3);
+                //bot.turn_right();
+                telemetry.addData("sup", "sup");
+            };
+            while ((sensorColor.blue() < 350) && (sensorColor.red() < 350) && (sensorColor.green() < 350)&&(sensorColor.blue() > 80) && (sensorColor.red() > 80) && (sensorColor.green() > 80)) {
+                bot.brake();
+                //bot.turn_right();
+                stop = 1;
+            };
         }
+
+    }
+
+
 
     public void encoderDrive(double inches, String direction , double power ) {
         int encoderval;
@@ -92,5 +119,31 @@ public class LineFollow extends LinearOpMode {
         bot.reset_encoders();
 
     }
+    public void gyroTurnRight(double angle, String direction, double power){
+        double aheading = imu.getHeading() + angle;
+        telemetry.addData("IMU:",imu.getHeading());
+        if(aheading>360){
+            aheading=aheading-360;
+        }
+        boolean gua = false;
+        bot.run_without_encoders();
+        bot.setPowerD(power);
 
+        while(opModeIsActive() && gua==false) {
+            //aheading = Math.abs(imu.getHeading()) + angle;
+            bot.turn_right();
+
+            telemetry.addData("Heading", imu.getHeading());
+            telemetry.addData("Target Angle", aheading);
+            telemetry.update();
+            if (imu.getHeading() >= (aheading - THRESHOLD) && (imu.getHeading() <= (aheading + THRESHOLD))) {
+                bot.brake();
+                gua=true;
+            }
+
+        }
+
+        bot.brake();
+
+    }
 }

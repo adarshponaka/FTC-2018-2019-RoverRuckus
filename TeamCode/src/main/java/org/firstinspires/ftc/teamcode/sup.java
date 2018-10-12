@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -47,7 +48,7 @@ public class sup extends OpMode
     double frspeedcoefficient = .9;
     double brspeedcoefficient = .9;
 
-
+    ColorSensor sensorColor;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -74,6 +75,7 @@ public class sup extends OpMode
         blMotor = hardwareMap.dcMotor.get("bl");
         brMotor = hardwareMap.dcMotor.get("br");
 
+        sensorColor = hardwareMap.get(ColorSensor.class, "sensor_color_distance");
 
     }
 
@@ -98,7 +100,9 @@ public class sup extends OpMode
     @Override
     public void loop() {
         if (gamepad1.left_trigger > 0.9) {
-            telemetry.addData("Status", "Running: " + runtime.toString());
+            telemetry.addData("Red",":" + Integer.toString(sensorColor.red()));
+            telemetry.addData("Blue",":" + Integer.toString(sensorColor.blue()));
+            telemetry.addData("Green",":" + Integer.toString(sensorColor.green()));            telemetry.addData("Status", "Running: " + runtime.toString());
             double A = .5;
             double L = .5;
             flspeedcoefficient = -.6;
@@ -115,17 +119,20 @@ public class sup extends OpMode
             A = getA(gamepad1.left_stick_x, gamepad1.left_stick_y, -Math.PI / 4);
             blMotor.setPower(blspeedcoefficient * L * A);
             telemetry.addLine("bl: " + Double.toString(blspeedcoefficient * L * A));
-            //front right motor
+            //front right
             L = getL(gamepad1.right_stick_x, gamepad1.right_stick_y, -Math.PI / 4);
             A = getA(gamepad1.right_stick_x, gamepad1.right_stick_y, -Math.PI / 4);
             frMotor.setPower(frspeedcoefficient * L * A);
             telemetry.addLine("fr: " + Double.toString(frspeedcoefficient * L * A));
-            //back right motor
+            //back right motor,
             L = getL(gamepad1.right_stick_x, gamepad1.right_stick_y, Math.PI / 4);
             A = getA(gamepad1.right_stick_x, gamepad1.right_stick_y, Math.PI / 4);
             brMotor.setPower(brspeedcoefficient * L * A);
             telemetry.addLine("br: " + Double.toString(brspeedcoefficient * L * A));
         }else if (gamepad1.left_trigger == 0){
+            telemetry.addData("Red",":" + Integer.toString(sensorColor.red()));
+            telemetry.addData("Blue",":" + Integer.toString(sensorColor.blue()));
+            telemetry.addData("Green",":" + Integer.toString(sensorColor.green()));
             telemetry.addData("Status", "Running: " + runtime.toString());
             double A = .5;
             double L = .5;

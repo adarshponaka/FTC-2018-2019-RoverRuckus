@@ -4,12 +4,12 @@ import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 
 /**
- * Created by vatty on 9/23/2017.
+ * Created by adars on 10/7/2018.
  */
 
 public class Pixy {
     I2cDeviceSynch pixy;
-
+    //pixy =
     public Pixy(I2cDeviceSynch hardwaremap){
         pixy = hardwaremap;
         pixy.setI2cAddress(I2cAddr.create7bit(0x54));
