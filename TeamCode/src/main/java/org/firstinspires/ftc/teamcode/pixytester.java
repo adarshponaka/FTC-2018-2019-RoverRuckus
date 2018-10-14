@@ -64,29 +64,18 @@ public class pixytester extends LinearOpMode{
 
         cam.engage();
 
-        if ((cam.getX() != 0) && (cam.getY() != 0) && (cam.numobjects() != 0)) {
-            encoderDrive(15, "right", 0.3);
-        }
-
-        encoderDrive(15, "forward", 0.3);
-        if ((cam.getX() != 0) && (cam.getY() != 0) && (cam.numobjects() != 0)) {
-            encoderDrive(15, "right", 0.3);
-        }
-
-        encoderDrive(31, "backward", 0.3);
-        if ((cam.getX() != 0) && (cam.getY() != 0) && (cam.numobjects() != 0)) {
-            encoderDrive(15, "right", 0.3);
-        }
 
 
-        /*
         while (opModeIsActive()) {
+            if ((cam.getX() != 0) && (cam.getY() != 0) && (cam.numobjects() != 0)) {
+                encoderDrive(1, "right", 0.3);
+            }
             telemetry.addData("Data 1", cam.getX());
             telemetry.addData("Data 2", cam.getY());
             telemetry.addData("Data 0", cam.numobjects());
             telemetry.update();
         }
-        */
+
     }
     public void encoderDrive(double inches, String direction , double power ) {
         int encoderval;
