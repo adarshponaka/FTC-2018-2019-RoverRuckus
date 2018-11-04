@@ -1,31 +1,20 @@
 package org.firstinspires.ftc.teamcode;
 
+/**
+ * Created by adars on 10/14/2018.
+ */
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
-
 import org.firstinspires.ftc.teamcode.classes.AdafruitIMU;
 import org.firstinspires.ftc.teamcode.classes.Mecanum;
-import org.firstinspires.ftc.teamcode.classes.Pixy;
 
-/**
- * Created by adars on 10/7/2018.
- */
 
-@Autonomous(name = "pixyTester")
+@Autonomous(name = "encoderTester")
 
-public class pixytester extends LinearOpMode{
-
-    I2cDeviceSynch pixy;
-
-    Pixy cam;
-
-    I2cDeviceSynch pixy2;
-
-    Pixy cam2;
+public class encodertester extends LinearOpMode{
 
     private DcMotor motorFR;
     private DcMotor motorFL;
@@ -44,11 +33,6 @@ public class pixytester extends LinearOpMode{
     Double driveDistance;
 
     public void runOpMode(){
-        pixy = hardwareMap.i2cDeviceSynch.get("pixy");
-        pixy2 = hardwareMap.i2cDeviceSynch.get("pixy2");
-
-        cam = new Pixy(pixy);
-        cam2 = new Pixy(pixy2);
 
         //motors
         motorFL = hardwareMap.dcMotor.get("fl");
@@ -62,31 +46,22 @@ public class pixytester extends LinearOpMode{
         //IMU
         imu = new AdafruitIMU(hardwareMap.get(BNO055IMU.class, "imu"));
 
-        driveDistance = 15.0;
 
         waitForStart();
 
 
         imu.start();
 
-        cam.engage();
 
 
+       // while (opModeIsActive()) {
+        encoderDrive(5, "right", 0.3);
+        bot.brake();
 
-        while (opModeIsActive()) {
-            if ((cam.getX() != 0) && (cam.getY() != 0) && (cam.numobjects() != 0)) {
-                encoderDrive(1, "right", 0.3);
-            }
-            telemetry.addData("Data 1", cam.getX());
-            telemetry.addData("Data 2", cam.getY());
-            telemetry.addData("Data 0", cam.numobjects());
-            telemetry.addData("Data 3", cam2.getX());
-            telemetry.addData("Data 4", cam2.getY());
-            telemetry.addData("Data 5", cam2.numobjects());
-            telemetry.update();
-        }
+        //}
 
     }
+
     public void encoderDrive(double inches, String direction , double power ) {
         int encoderval;
         //
@@ -126,3 +101,6 @@ public class pixytester extends LinearOpMode{
     }
 
 }
+
+
+
