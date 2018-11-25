@@ -102,7 +102,8 @@ public class sup extends OpMode
         if (gamepad1.left_trigger > 0.9) {
             telemetry.addData("Red",":" + Integer.toString(sensorColor.red()));
             telemetry.addData("Blue",":" + Integer.toString(sensorColor.blue()));
-            telemetry.addData("Green",":" + Integer.toString(sensorColor.green()));            telemetry.addData("Status", "Running: " + runtime.toString());
+            telemetry.addData("Green",":" + Integer.toString(sensorColor.green()));
+                         telemetry.addData("Status", "Running: " + runtime.toString());
             double A = .5;
             double L = .5;
             flspeedcoefficient = -.6;
