@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.classes.Pixy;
 
 /**
  * Created by adars on 10/7/2018.
+ * Aakash can't handle spice
  */
 
 @Autonomous(name = "pixyTester")
