@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode;
         import com.qualcomm.robotcore.eventloop.opmode.OpMode;
         import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
         import com.qualcomm.robotcore.hardware.DcMotor;
+        import com.qualcomm.robotcore.hardware.DcMotorSimple;
         import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
@@ -21,7 +22,7 @@ public class armtester extends OpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private double A = .5;
     private double L = .5;
-    private int c = 1;
+
     @Override
     public void init(){
         telemetry.addData("Status", "Initialized");
@@ -51,22 +52,25 @@ public class armtester extends OpMode {
     public void loop(){
         telemetry.addData("Status", "Running: " + runtime.toString());
         if (gamepad1.left_trigger > 0.9) {
-            c = -1;
+            motorT.setDirection(DcMotor.Direction.REVERSE);
+            motorT.setPower(0.5);
+
         }
         if (gamepad1.right_trigger > 0.9) {
-            c = 1;
+            motorT.setDirection(DcMotor.Direction.FORWARD);
+            motorT.setPower(0.5);
+
         }
-        L = getL(gamepad1.left_stick_x, gamepad1.left_stick_y, c*Math.PI / 4);
-        A = getA(gamepad1.left_stick_x, gamepad1.left_stick_y, c*Math.PI / 4);
-        motorB.setPower((0.5 * L * A)*c);
+        L = getL(gamepad1.left_stick_x, gamepad1.left_stick_y, Math.PI / 4);
+        A = getA(gamepad1.left_stick_x, gamepad1.left_stick_y, Math.PI / 4);
+        motorB.setPower(0.9 * L * A);
         telemetry.addLine("mb: " + Double.toString(0.9 * L * A));
 
-        L = getL(gamepad1.right_stick_x, gamepad1.right_stick_y, c*Math.PI / 4);
-        A = getA(gamepad1.right_stick_x, gamepad1.right_stick_y, c*Math.PI / 4);
-        motorT.setPower((0.5 * L * A)*c);
+        L = getL(gamepad1.right_stick_x, gamepad1.right_stick_y, Math.PI / 4);
+        A = getA(gamepad1.right_stick_x, gamepad1.right_stick_y, Math.PI / 4);
+        motorT.setPower(0.9 * L * A);
         telemetry.addLine("mt: " + Double.toString(0.9 * L * A));
 
-        telemetry.addLine("mb: " + Integer.toString(c));
 
     }
 
