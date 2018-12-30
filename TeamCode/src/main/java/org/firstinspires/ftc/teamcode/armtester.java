@@ -20,15 +20,17 @@ public class armtester extends OpMode {
     private DcMotor motorT; //motor top
     private DcMotor motorB; //motor base
     private ElapsedTime runtime = new ElapsedTime();
-    private double A = .5;
-    private double L = .5;
+    private double AB = .5;
+    private double LB = .5;
+    private double AT = .5;
+    private double LT = .5;
     private double powerB = 0;
     private double powerT = 0;
     @Override
     public void init(){
         telemetry.addData("Status", "Initialized");
-        motorB = hardwareMap.dcMotor.get("m1");
-        motorT = hardwareMap.dcMotor.get("m2");
+        motorB = hardwareMap.dcMotor.get("mb");
+        motorT = hardwareMap.dcMotor.get("mt");
     }
     @Override
     public void init_loop() {
@@ -49,38 +51,19 @@ public class armtester extends OpMode {
     @Override
     public void loop(){
         telemetry.addData("Status", "Running: " + runtime.toString());
-                if (gamepad1.left_trigger > 0.9) {
-                motorT.setDirection(DcMotor.Direction.REVERSE);
-                motorT.setPower(0.5);
 
-            }
-            if (gamepad1.right_trigger > 0.9) {
-                motorT.setDirection(DcMotor.Direction.FORWARD);
-                motorT.setPower(0.5);
 
-        }
-
-        L = getL(gamepad1.left_stick_x, gamepad1.left_stick_y, Math.PI / 4);
-        A = getA(gamepad1.left_stick_x, gamepad1.left_stick_y, Math.PI / 4);
-        powerB = 0.9*L*A;
-        if(powerB<0){
-            motorB.setDirection(DcMotor.Direction.REVERSE);
-        }else if (powerB>0){
-            motorB.setDirection(DcMotor.Direction.FORWARD);
-        }
-        motorB.setPower(Math.abs(powerT));
+        LB = getL(0, gamepad1.left_stick_y, Math.PI / 4);
+        AB = getA(0, gamepad1.left_stick_y, Math.PI / 4);
+        powerB = 0.9*LB*AB;
+        motorB.setPower((0.5*powerB));
         motorB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         telemetry.addLine("mb: " + Double.toString(powerB));
 
-        L = getL(gamepad1.right_stick_x, gamepad1.right_stick_y, Math.PI / 4);
-        A = getA(gamepad1.right_stick_x, gamepad1.right_stick_y, Math.PI / 4);
-        powerT = 0.9*L*A;
-        if(powerT<0){
-            motorT.setDirection(DcMotor.Direction.REVERSE);
-        }else if (powerT>0){
-            motorT.setDirection(DcMotor.Direction.FORWARD);
-        }
-        motorT.setPower(Math.abs(powerT));
+        LT = getL(0, gamepad1.right_stick_y, Math.PI / 4);
+        AT = getA(0, gamepad1.right_stick_y, Math.PI / 4);
+        powerT = 0.9*LT*AT;
+        motorT.setPower((powerT));
         motorT.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         telemetry.addLine("mt: " + Double.toString(powerT));
 
