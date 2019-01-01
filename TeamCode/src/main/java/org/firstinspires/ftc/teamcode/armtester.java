@@ -9,9 +9,7 @@ package org.firstinspires.ftc.teamcode;
 
 /**
  * Created by adars on 11/4/2018.
- * Aakash has an A in Apush. He'ss very proud
  */
-//pavan
 
 @TeleOp(name="armtester", group="Iterative Opmode")  // @Autonomous(...) is the other common choice
 
