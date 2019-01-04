@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
-        import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
         import com.qualcomm.robotcore.eventloop.opmode.OpMode;
         import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+        import com.qualcomm.robotcore.hardware.CRServo;
         import com.qualcomm.robotcore.hardware.DcMotor;
         import com.qualcomm.robotcore.hardware.DcMotorSimple;
         import com.qualcomm.robotcore.util.ElapsedTime;
+        import com.qualcomm.robotcore.hardware.Servo;
+
 
 /**
  * Created by adars on 11/4/2018.
@@ -17,6 +20,7 @@ package org.firstinspires.ftc.teamcode;
 public class armtester extends OpMode {
     private DcMotor motorT; //motor top
     private DcMotor motorB; //motor base
+    private Servo EEservo;
     private ElapsedTime runtime = new ElapsedTime();
     private double AB = .5;
     private double LB = .5;
@@ -24,11 +28,29 @@ public class armtester extends OpMode {
     private double LT = .5;
     private double powerB = 0;
     private double powerT = 0;
+    private double EEservopos = 0.0;
+
+    //inverse kinematics
+    private double x = 20; //in inches
+    private double y = -5; //in inches
+    private double phi = 180 ; //in degrees
+    private double l1 = 14.5; //in inches
+    private double l2 = 14.5; //in inches
+    private double l3 = 7.398; //in inches
+    private double theta1 = 0; //in degrees
+    private double theta2 = 0; //in degrees
+    private double theta3 = 0; //in degrees
+
     @Override
     public void init(){
         telemetry.addData("Status", "Initialized");
-        motorB = hardwareMap.dcMotor.get("mb");
-        motorT = hardwareMap.dcMotor.get("mt");
+        motorB = hardwareMap.dcMotor.get("mb"); //motor base
+        motorT = hardwareMap.dcMotor.get("mt"); //motor top
+        motorB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorT.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        EEservo = hardwareMap.servo.get("ee"); //end effector
+        EEservo.setPosition(EEservopos);
+        phi = (phi /180) * Math.PI; //phi to radians
     }
     @Override
     public void init_loop() {
@@ -49,21 +71,74 @@ public class armtester extends OpMode {
     @Override
     public void loop(){
         telemetry.addData("Status", "Running: " + runtime.toString());
+        telemetry.addLine("Motors B encoder " + Integer.toString(motorB.getCurrentPosition()));
+        telemetry.addLine("Motors T encoder " + Integer.toString(motorT.getCurrentPosition()));
 
+        //manual arm movement
+            LB = getL(0, gamepad1.left_stick_y, Math.PI / 4);
+            AB = getA(0, gamepad1.left_stick_y, Math.PI / 4);
+            powerB = 0.9*LB*AB;
+            motorB.setPower((0.5*powerB));
+            motorB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            telemetry.addLine("mb: " + Double.toString(powerB));
 
-        LB = getL(0, gamepad1.left_stick_y, Math.PI / 4);
-        AB = getA(0, gamepad1.left_stick_y, Math.PI / 4);
-        powerB = 0.9*LB*AB;
-        motorB.setPower((0.5*powerB));
-        motorB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        telemetry.addLine("mb: " + Double.toString(powerB));
+            LT = getL(0, gamepad1.right_stick_y, Math.PI / 4);
+            AT = getA(0, gamepad1.right_stick_y, Math.PI / 4);
+            powerT = 0.9*LT*AT;
+            motorT.setPower((powerT));
+            motorT.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            telemetry.addLine("mt: " + Double.toString(powerT));
 
-        LT = getL(0, gamepad1.right_stick_y, Math.PI / 4);
-        AT = getA(0, gamepad1.right_stick_y, Math.PI / 4);
-        powerT = 0.9*LT*AT;
-        motorT.setPower((powerT));
-        motorT.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        telemetry.addLine("mt: " + Double.toString(powerT));
+        //manual servo movement
+            //x is turning down when end effector is left
+            //b is turning down when end effector is right
+            if (gamepad1.x){
+              EEservopos = EEservopos - 0.001;
+            }
+            if (gamepad1.b){
+                EEservopos = EEservopos + 0.001;
+            }
+            if(EEservopos >= 1.0){
+                EEservopos=1.0;
+            }
+            if(EEservopos<=0.0){
+                EEservopos=0.0;
+            }
+            EEservo.setPosition(EEservopos);
+            telemetry.addLine("Servo Pos " + Double.toString(EEservopos));
+
+        //inverse kinematics: calculating motor angles
+            theta1 = gettheta1(x, y, phi, l1, l2, l3);
+            theta2 = gettheta2(x, y, phi, l1, l2, l3);
+            theta3 = gettheta3(phi, theta1, theta2);
+            telemetry.addLine(Double.toString(theta1) + " " + Double.toString(theta2) + " " +  Double.toString(theta3));
+            telemetry.addLine(Integer.toString((int)Math.round((theta2/360)*1120)));
+        //autonomous arm movement
+            //nevrest 40 = 1120 ticks per rotation (motorT)
+            //nevrest 20 = 560 ticks per rotation (motorB) //need to recalculate due to gearbox
+            if(gamepad1.right_bumper){
+                motorT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                motorT.setTargetPosition(-1*(int)Math.round((theta2/360)*1120));
+                motorT.setPower(.5);
+                while(motorT.isBusy()){
+
+                }
+                motorT.setPower(0);
+            }
+            if(gamepad1.a){
+                motorT.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                motorT.setPower(.4);
+                while(motorT.getCurrentPosition()<(900-70)){
+
+                }
+                motorT.setPower(0);
+            }
+            if(gamepad1.y){
+                motorT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                motorB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                motorT.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                motorB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            }
 
 
     }
@@ -95,6 +170,25 @@ public class armtester extends OpMode {
     private static double getnewY(double x,double y,double angle){
         return x*Math.sin(angle) + y*Math.cos(angle);
     }
+
+    //inverse kinematics functions
+    private static double gettheta1(double xval, double yval, double phival, double l1val, double l2val, double l3val){
+        return((((Math.PI/2)-Math.acos((Math.pow((xval-(l3val*Math.sin(phival))),2)+
+                Math.pow((yval-(l3val*Math.cos(phival))),2)+Math.pow(l1val, 2)-Math.pow(l2val,2))/
+                (2*l1val*Math.sqrt((Math.pow((xval-(l3val*Math.sin(phival))),2))+(Math.pow((yval-(l3val*Math.cos(phival))),2)))))
+                -Math.atan((yval-(l3val*Math.cos(phival)))/(xval-(l3val*Math.sin(phival)))))/ Math.PI)*180);
+    }
+    private static double gettheta2(double xval, double yval, double phival, double l1val, double l2val, double l3val){
+        return(((Math.PI-Math.acos((Math.pow(l1val, 2)+
+                Math.pow(l2val,2)-Math.pow((xval-(l3val*Math.sin(phival))),2)-Math.pow((yval-(l3val*Math.cos(phival))),2))/
+                (2*l1val*l2val)))/ Math.PI)*180);
+    }
+    private static double gettheta3(double phival, double t1, double t2){
+        t1 = (t1/180)*Math.PI;
+        t2 = (t2/180)*Math.PI;
+        return(((phival-t1-t2)/ Math.PI)*180);
+    }
+
     @Override
     public void stop() {
     }
