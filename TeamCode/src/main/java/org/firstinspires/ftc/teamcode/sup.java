@@ -9,6 +9,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.classes.Mecanum;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.lang.Math;
@@ -41,6 +43,12 @@ public class sup extends OpMode
     private DcMotor frMotor;
     private DcMotor blMotor;
     private DcMotor brMotor;
+
+    private static final Double ticks_per_inch = 510 / (3.1415 * 4);
+    private static final Double CORRECTION = .04;
+    private static final Double THRESHOLD = 2.0;
+
+    Mecanum bot = new Mecanum();
 
 
     double flspeedcoefficient = -.9;
@@ -161,6 +169,20 @@ public class sup extends OpMode
             A = getA(gamepad1.right_stick_x, gamepad1.right_stick_y, Math.PI / 4);
             brMotor.setPower(brspeedcoefficient * L * A);
             telemetry.addLine("br: " + Double.toString(brspeedcoefficient * L * A));
+            if(gamepad1.dpad_up){
+                encoderDrive(1,"forward",1);
+            }
+            if(gamepad1.dpad_down){
+                encoderDrive(1,"backward",1);
+
+            }
+            if(gamepad1.dpad_right){
+                encoderDrive(1,"right",1);
+
+            }
+            if(gamepad1.dpad_left){
+                encoderDrive(1,"left",1);
+            }
         }
     }
     private static double getL(double x, double y, double angle){
@@ -196,5 +218,36 @@ public class sup extends OpMode
     @Override
     public void stop() {
     }
+    public void encoderDrive(double inches, String direction , double power ) {
+        int encoderval;
+        //
+        // Sets the encoders
+        //
+        bot.reset_encoders();
+        encoderval = ticks_per_inch.intValue() * (int) inches;
+        bot.run_using_encoders();
+        //
+        // Uses the encoders and motors to set the specific position
+        //
+        bot.setPosition(encoderval,encoderval,encoderval,encoderval);
+        //
+        // Sets the power and direction
+        //
+        bot.setPowerD(power);
+        if (direction == "forward"){
+            bot.run_forward();
+        } else if(direction == "backward"){
+            bot.run_backward();
+        } else if (direction == "left"){
+            bot.run_left();
+        } else if (direction == "right"){
+            bot.run_right();
+        } else if (direction == "diagonal_left_up"){
+            bot.run_diagonal_left_up();
+        }
 
+        bot.brake();
+        bot.reset_encoders();
+
+    }
 }

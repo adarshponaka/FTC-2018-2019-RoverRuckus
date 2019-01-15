@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
         import com.qualcomm.robotcore.eventloop.opmode.OpMode;
         import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -8,6 +9,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
         import com.qualcomm.robotcore.hardware.DcMotorSimple;
         import com.qualcomm.robotcore.util.ElapsedTime;
         import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.teamcode.classes.AdafruitIMU;
 
 
 /**
@@ -29,6 +32,8 @@ public class armtester extends OpMode {
     private double powerB = 0;
     private double powerT = 0;
     private double EEservopos = 0.0;
+    private AdafruitIMU imu1 = new AdafruitIMU();
+    private AdafruitIMU imu2 = new AdafruitIMU();
 
     //inverse kinematics
     private double x = 20; //in inches
@@ -51,6 +56,10 @@ public class armtester extends OpMode {
         EEservo = hardwareMap.servo.get("ee"); //end effector
         EEservo.setPosition(EEservopos);
         phi = (phi /180) * Math.PI; //phi to radians
+        imu1 = new AdafruitIMU(hardwareMap.get(BNO055IMU.class, "imu1"));
+        imu1.init();
+        //imu2 = new AdafruitIMU(hardwareMap.get(BNO055IMU.class, "imu2"));
+
     }
     @Override
     public void init_loop() {
@@ -63,6 +72,7 @@ public class armtester extends OpMode {
     @Override
     public void start() {
         runtime.reset();
+        imu1.start();
     }
 
     /*
@@ -70,6 +80,8 @@ public class armtester extends OpMode {
      */
     @Override
     public void loop(){
+
+        telemetry.addLine("IMU 1 " + Double.toString(Math.sqrt(imu1.getAccelX()*imu1.getAccelX() + imu1.getAccelZ()*imu1.getAccelZ() + imu1.getAccelY()*imu1.getAccelY())));
         telemetry.addData("Status", "Running: " + runtime.toString());
         telemetry.addLine("Motors B encoder " + Integer.toString(motorB.getCurrentPosition()));
         telemetry.addLine("Motors T encoder " + Integer.toString(motorT.getCurrentPosition()));
@@ -118,12 +130,20 @@ public class armtester extends OpMode {
             //nevrest 20 = 560 ticks per rotation (motorB) //need to recalculate due to gearbox
             if(gamepad1.right_bumper){
                 motorT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                motorB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 motorT.setTargetPosition(-1*(int)Math.round((theta2/360)*1120));
+                motorB.setTargetPosition(-1*(int)Math.round((theta1/360)*560));
+                EEservo.setPosition((int)Math.round((theta1/180)*1));
                 motorT.setPower(.5);
+                motorB.setPower(.5);
                 while(motorT.isBusy()){
 
                 }
+                while(motorB.isBusy()){
+
+                }
                 motorT.setPower(0);
+                motorB.setPower(0);
             }
             if(gamepad1.a){
                 motorT.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -139,6 +159,7 @@ public class armtester extends OpMode {
                 motorT.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 motorB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             }
+
 
 
     }
