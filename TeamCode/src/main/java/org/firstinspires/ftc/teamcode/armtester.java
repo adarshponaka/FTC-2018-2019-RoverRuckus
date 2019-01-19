@@ -1,16 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-        import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
         import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-        import com.qualcomm.robotcore.hardware.CRServo;
-        import com.qualcomm.robotcore.hardware.DcMotor;
-        import com.qualcomm.robotcore.hardware.DcMotorSimple;
-        import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.exception.RobotCoreException;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
         import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.classes.AdafruitIMU;
+import org.firstinspires.ftc.teamcode.classes.AdafruitIMUold;
 
 
 /**
@@ -32,8 +31,12 @@ public class armtester extends OpMode {
     private double powerB = 0;
     private double powerT = 0;
     private double EEservopos = 0.0;
-    private AdafruitIMU imu1 = new AdafruitIMU();
-    private AdafruitIMU imu2 = new AdafruitIMU();
+    private AdafruitIMU imu1;
+    private volatile double[] pitchangle = new double[2];
+    private volatile double[] rollangle = new double[2];
+    private volatile double[] yawangle = new double[2];
+
+    //private AdafruitIMUold imu2 = new AdafruitIMUold();
 
     //inverse kinematics
     private double x = 20; //in inches
@@ -56,9 +59,23 @@ public class armtester extends OpMode {
         EEservo = hardwareMap.servo.get("ee"); //end effector
         EEservo.setPosition(EEservopos);
         phi = (phi /180) * Math.PI; //phi to radians
-        imu1 = new AdafruitIMU(hardwareMap.get(BNO055IMU.class, "imu1"));
-        imu1.init();
-        //imu2 = new AdafruitIMU(hardwareMap.get(BNO055IMU.class, "imu2"));
+        long systemTime = System.nanoTime();
+        try {
+            imu1 = new AdafruitIMU(hardwareMap, "imu1"
+
+                    //The following was required when the definition of the "I2cDevice" class was incomplete.
+                    //, "cdim", 5
+
+                    , (byte) (AdafruitIMU.BNO055_ADDRESS_A * 2)//By convention the FTC SDK always does 8-bit I2C bus
+                    //addressing
+                    , (byte) AdafruitIMU.OPERATION_MODE_IMU);
+
+        } catch (RobotCoreException e){
+            telemetry.addData("FtcRobotController", "Exception: " + e.getMessage());
+        }
+        imu1.startIMU();
+        telemetry.addData("FtcRobotController", "IMU Init method finished in: "
+                + (-(systemTime - (systemTime = System.nanoTime()))) + " ns.");
 
     }
     @Override
@@ -163,7 +180,10 @@ public class armtester extends OpMode {
 
 
     }
-
+    public double getpitch(){
+        imu1.getIMUGyroAngles(rollangle,pitchangle,yawangle);
+        return pitchangle[0];
+    }
     private static double getL(double x, double y, double angle){
         return Math.pow((Math.pow(x,2) + Math.pow(y, 2)),.5);
     }

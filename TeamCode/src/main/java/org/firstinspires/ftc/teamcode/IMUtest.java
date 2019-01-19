@@ -3,7 +3,7 @@ import android.util.Log;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.exception.RobotCoreException;
-import org.firstinspires.ftc.teamcode.classes.adafruitbno055;
+import org.firstinspires.ftc.teamcode.classes.AdafruitIMU;
 
 
 /**
@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.classes.adafruitbno055;
 
 public class IMUtest extends OpMode {
 
-    adafruitbno055 boschBNO055;
+    AdafruitIMU boschBNO055;
 
     //The following arrays contain both the Euler angles reported by the IMU (indices = 0) AND the
     // Tait-Bryan angles calculated from the 4 components of the quaternion vector (indices = 1)
@@ -26,32 +26,25 @@ public class IMUtest extends OpMode {
      * The following method was introduced in the 3 August 2015 FTC SDK beta release and it runs
      * before "start" runs.
      */
+
     @Override
     public void init() {
-        systemTime = System.nanoTime();
+        long systemTime = System.nanoTime();
         try {
-            boschBNO055 = new adafruitbno055(hardwareMap, "bno055"
+            boschBNO055 = new AdafruitIMU(hardwareMap, "imu1"
 
                     //The following was required when the definition of the "I2cDevice" class was incomplete.
                     //, "cdim", 5
 
-                    , (byte) (adafruitbno055.BNO055_ADDRESS_A * 2)//By convention the FTC SDK always does 8-bit I2C bus
+                    , (byte) (AdafruitIMU.BNO055_ADDRESS_A * 2)//By convention the FTC SDK always does 8-bit I2C bus
                     //addressing
-                    , (byte) adafruitbno055.OPERATION_MODE_IMU) {
-                @Override
-                public Manufacturer getManufacturer() {
-                    return null;
-                }
+                    , (byte) AdafruitIMU.OPERATION_MODE_IMU);
 
-                @Override
-                public void resetDeviceConfigurationForOpMode() {
-
-                }
-            };
         } catch (RobotCoreException e){
-            Log.i("FtcRobotController", "Exception: " + e.getMessage());
+            telemetry.addData("FtcRobotController", "Exception: " + e.getMessage());
         }
-        Log.i("FtcRobotController", "IMU Init method finished in: "
+        boschBNO055.startIMU();
+        telemetry.addData("FtcRobotController", "IMU Init method finished in: "
                 + (-(systemTime - (systemTime = System.nanoTime()))) + " ns.");
         //ADDRESS_B is the "standard" I2C bus address for the Bosch BNO055 (IMU data sheet, p. 90).
         //BUT DAVID PIERCE, MENTOR OF TEAM 8886, HAS EXAMINED THE SCHEMATIC FOR THE ADAFRUIT BOARD ON
@@ -65,6 +58,7 @@ public class IMUtest extends OpMode {
      * Code to run when the op mode is first enabled goes here
      * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#start()
      */
+
     @Override
     public void start() {
         /*

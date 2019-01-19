@@ -5,8 +5,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+
+import org.firstinspires.ftc.teamcode.classes.AdafruitIMUold;
 import org.firstinspires.ftc.teamcode.classes.Mecanum;
-import org.firstinspires.ftc.teamcode.classes.AdafruitIMU;
 
 /**
  * Created by adars on 9/15/2018.
@@ -23,7 +24,7 @@ public class LineFollow extends LinearOpMode {
     Mecanum bot = new Mecanum();
 
     //Gyro Initialize
-    AdafruitIMU imu = new AdafruitIMU();
+    AdafruitIMUold imu = new AdafruitIMUold();
 
     //Color sensor
     ColorSensor sensorColor;
@@ -42,7 +43,7 @@ public class LineFollow extends LinearOpMode {
         bot = new Mecanum(motorFR, motorFL, motorBR, motorBL);
 
         //IMU
-        imu = new AdafruitIMU(hardwareMap.get(BNO055IMU.class, "imu"));
+        imu = new AdafruitIMUold(hardwareMap.get(BNO055IMU.class, "imu"));
 
         //Color Sensor
         sensorColor = hardwareMap.get(ColorSensor.class, "sensor_color_distance");
