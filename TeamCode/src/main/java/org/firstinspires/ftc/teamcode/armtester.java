@@ -1,15 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
         import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
         import com.qualcomm.robotcore.hardware.Servo;
-
-import org.firstinspires.ftc.teamcode.classes.AdafruitIMU;
-import org.firstinspires.ftc.teamcode.classes.AdafruitIMUold;
 
 
 /**
@@ -31,12 +27,12 @@ public class armtester extends OpMode {
     private double powerB = 0;
     private double powerT = 0;
     private double EEservopos = 0.0;
-    private AdafruitIMU imu1;
+    //private AdafruitIMU imu1;
     private volatile double[] pitchangle = new double[2];
     private volatile double[] rollangle = new double[2];
     private volatile double[] yawangle = new double[2];
 
-    //private AdafruitIMUold imu2 = new AdafruitIMUold();
+    //private AdafruitIMU imu2 = new AdafruitIMU();
 
     //inverse kinematics
     private double x = 20; //in inches
@@ -59,23 +55,6 @@ public class armtester extends OpMode {
         EEservo = hardwareMap.servo.get("ee"); //end effector
         EEservo.setPosition(EEservopos);
         phi = (phi /180) * Math.PI; //phi to radians
-        long systemTime = System.nanoTime();
-        try {
-            imu1 = new AdafruitIMU(hardwareMap, "imu1"
-
-                    //The following was required when the definition of the "I2cDevice" class was incomplete.
-                    //, "cdim", 5
-
-                    , (byte) (AdafruitIMU.BNO055_ADDRESS_A * 2)//By convention the FTC SDK always does 8-bit I2C bus
-                    //addressing
-                    , (byte) AdafruitIMU.OPERATION_MODE_IMU);
-
-        } catch (RobotCoreException e){
-            telemetry.addData("FtcRobotController", "Exception: " + e.getMessage());
-        }
-        imu1.startIMU();
-        telemetry.addData("FtcRobotController", "IMU Init method finished in: "
-                + (-(systemTime - (systemTime = System.nanoTime()))) + " ns.");
 
     }
     @Override
@@ -89,7 +68,7 @@ public class armtester extends OpMode {
     @Override
     public void start() {
         runtime.reset();
-        imu1.start();
+       // imu1.start();
     }
 
     /*
@@ -98,7 +77,7 @@ public class armtester extends OpMode {
     @Override
     public void loop(){
 
-        telemetry.addLine("IMU 1 " + Double.toString(Math.sqrt(imu1.getAccelX()*imu1.getAccelX() + imu1.getAccelZ()*imu1.getAccelZ() + imu1.getAccelY()*imu1.getAccelY())));
+       // telemetry.addLine("IMU 1 " + Double.toString(Math.sqrt(imu1.getAccelX()*imu1.getAccelX() + imu1.getAccelZ()*imu1.getAccelZ() + imu1.getAccelY()*imu1.getAccelY())));
         telemetry.addData("Status", "Running: " + runtime.toString());
         telemetry.addLine("Motors B encoder " + Integer.toString(motorB.getCurrentPosition()));
         telemetry.addLine("Motors T encoder " + Integer.toString(motorT.getCurrentPosition()));
@@ -181,7 +160,6 @@ public class armtester extends OpMode {
 
     }
     public double getpitch(){
-        imu1.getIMUGyroAngles(rollangle,pitchangle,yawangle);
         return pitchangle[0];
     }
     private static double getL(double x, double y, double angle){

@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 
-import org.firstinspires.ftc.teamcode.classes.AdafruitIMUold;
+import org.firstinspires.ftc.teamcode.classes.AdafruitIMU;
 import org.firstinspires.ftc.teamcode.classes.Mecanum;
 import org.firstinspires.ftc.teamcode.classes.Pixy;
 
@@ -37,7 +37,7 @@ public class pixytester extends LinearOpMode{
     Mecanum bot = new Mecanum();
 
     //Gyro Initialize
-    AdafruitIMUold imu = new AdafruitIMUold();
+    AdafruitIMU imu = new AdafruitIMU();
 
     private static final Double ticks_per_inch = 510 / (3.1415 * 4);
     private static final Double CORRECTION = .04;
@@ -61,7 +61,7 @@ public class pixytester extends LinearOpMode{
         bot = new Mecanum(motorFR,motorFL,motorBR,motorBL);
 
         //IMU
-        imu = new AdafruitIMUold(hardwareMap.get(BNO055IMU.class, "imu"));
+        imu = new AdafruitIMU(hardwareMap.get(BNO055IMU.class, "imu"));
 
         driveDistance = 15.0;
 
